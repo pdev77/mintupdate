@@ -274,30 +274,28 @@ class AutomaticRefreshThread(threading.Thread):
                 self.application.logger.write("Auto-refresh will happen in " + str(self.application.settings.get_int("autorefresh-minutes")) + " minutes, " + str(self.application.settings.get_int("autorefresh-hours")) + " hours and " + str(self.application.settings.get_int("autorefresh-days")) + " days")    
                 timetosleep = int(timer)
 
-                # How long to sleep between epoch time checks
-                doze_seconds = 900 # 15 mins
-
                 # get initial epoch 
                 init_epoch = int(time.time())
-                print "Initial epoch is: " + str(init_epoch)
 
                 # The target epoch based on loop init epoch + user chosen refresh time 
                 target_epoch = init_epoch + timetosleep
-                self.application.logger.write("Auto-refresh WILL happen around epoch: " + str(target_epoch)
+                self.application.logger.write("Auto-refresh due at approx epoch: " + str(target_epoch))
 
                 if (timetosleep == 0):
                     time.sleep(60) # sleep 1 minute, don't mind the config we don't want an infinite loop to go nuts :)
+                elif (timetosleep < 3600): #Some users may have sleep < 60 mins so not fair to sleep for that long - and they will so often refresh no need for the hourly epoch check
+                    time.sleep(timetosleep)
                 else:
                     while True:
-                       time.sleep(doze_seconds)
+
+                       time.sleep(3600) # 60 mins
 
                        curr_epoch = int(time.time())                       
                        
                        if ( curr_epoch > target_epoch ) :
-                          print "APT Refresh now due"
                           break
                        else:
-                           print "Current epoch is only: " + str(curr_epoch) + " - go back to sleep for " + str(doze_seconds)
+                          self.application.logger.write("Current epoch is only: " + str(curr_epoch) )
 
                     if (self.application.app_hidden == True):
                         self.application.logger.write("MintUpdate is in tray mode, performing auto-refresh")
