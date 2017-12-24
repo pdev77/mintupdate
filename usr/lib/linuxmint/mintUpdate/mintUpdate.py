@@ -274,15 +274,13 @@ class AutomaticRefreshThread(threading.Thread):
         try:
             while(True):
                 timer = (self.application.settings.get_int("autorefresh-minutes") * 60) + (self.application.settings.get_int("autorefresh-hours") * 60 * 60) + (self.application.settings.get_int("autorefresh-days") * 24 * 60 * 60)
-                self.application.logger.write("Auto-refresh will happen in " + str(self.application.settings.get_int("autorefresh-minutes")) + " minutes, " + str(self.application.settings.get_int("autorefresh-hours")) + " hours and " + str(self.application.settings.get_int("autorefresh-days")) + " days")    
                 timetosleep = int(timer)
 
-                # get initial epoch 
-                init_epoch = int(time.time())
-
                 # The target epoch based on loop init epoch + user chosen refresh time 
+                init_epoch = int(time.time()) # get initial epoch 
                 target_epoch = init_epoch + timetosleep
-                self.application.logger.write("Auto-refresh due at approx epoch: " + str(target_epoch))
+
+                self.application.logger.write("Auto-refresh will happen in " + str(self.application.settings.get_int("autorefresh-minutes")) + " minutes, " + str(self.application.settings.get_int("autorefresh-hours")) + " hours and " + str(self.application.settings.get_int("autorefresh-days")) + " days" + "( Approx epoch: " + str(target_epoch) + " )" )
 
                 if (timetosleep == 0):
                     time.sleep(60) # sleep 1 minute, don't mind the config we don't want an infinite loop to go nuts :)
@@ -291,7 +289,7 @@ class AutomaticRefreshThread(threading.Thread):
                 else:
                     while True:
                        curr_epoch = int(time.time())
-                       self.application.logger.write("Within sleep loop - entering 60 minute sleep - current epoch is : " + str(curr_epoch) )
+                       self.application.logger.write("Within sleep loop - entering (another) 60 minute sleep - current epoch is : " + str(curr_epoch) )
                        time.sleep(3600) # 60 mins
 
                        curr_epoch = int(time.time())
@@ -2041,3 +2039,4 @@ class MintUpdate():
 
 if __name__ == "__main__":
     MintUpdate()
+    
